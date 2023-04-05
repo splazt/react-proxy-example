@@ -7,11 +7,19 @@ import CreateBook from './components/CreateBook';
 import { getAllBooks, createBook } from './services/BookService';
 import Footer from './components/Footer';
 
+///Todos
+import CreateTodo from './components/CreateTodo';
+import { getAllTodos, createTodo } from './services/TodoService';
+import TodoTable  from './components/TodoTable';
+
 function App () {
 
   const [bookShelf, setBookShelf] = useState({});
   const [books, setBooks] = useState([]);
   const [numberOfBooks, setNumberBooks] = useState(0);
+  const [todoList, setTodoList] = useState({});
+  const [todos, setTodos] = useState([]);
+  const [numberOfTodos, setNumberOfTodos] = useState(0);
 
   const handleSubmit = () => {
       createBook(bookShelf)
@@ -20,12 +28,30 @@ function App () {
       });
   }
 
+  const handleSubmitTodo = () => {
+    createTodo(todoList)
+      .then(() => {
+        setNumberOfTodos(numberOfTodos+1);
+      })
+
+  }
+
   const getAllBook = () => {
     getAllBooks()
       .then(data => {
+        console.log(data);
         setBooks(data);
         setNumberBooks(data.length);
       });
+  }
+
+  const getAllTodo = () => {
+    getAllTodos()
+      .then(data => {
+        console.log(data);
+        setTodos(data);
+        setNumberOfTodos(data.length);
+      })
   }
 
   const handleOnChangeForm = (e) => {
@@ -40,21 +66,47 @@ function App () {
       setBookShelf(inputData);
   }
 
-  
+  const handleOnChangeForm_Todos = (e) => {
+      let inputData = todoList;
+      if (e.target.name === 'todo'){
+        todoList.todo = e.target.value;
+      }else if (e.target.name === 'category') {
+        todoList.category = e.target.value;
+      }else if (e.target.name === 'complete'){
+        todoList.isComplete = e.target.value;
+      }
+
+      console.log(inputData);
+      setTodoList(inputData);
+  }
+
+
   return (
     <div className="main-wrapper">
       <div className="main">
         <Header />
-        <CreateBook 
+        <div className="forms">
+        <CreateBook
           bookShelf={bookShelf}
           onChangeForm={handleOnChangeForm}
           handleSubmit={handleSubmit}
         />
-        <DisplayBoard 
-          numberOfBooks={numberOfBooks} 
-          getAllBook={getAllBook} 
+        <CreateTodo
+          todoList={todoList}
+          onChangeForm={handleOnChangeForm_Todos}
+          handleSubmit={handleSubmitTodo}
         />
-        <BookTable books={books} />
+        </div>
+        <DisplayBoard
+          numberOfBooks={numberOfBooks}
+          getAllBook={getAllBook}
+          numberOfTodos={numberOfTodos}
+          getAllTodo={getAllTodo}
+        />
+        <div className="forms">
+          <BookTable books={books} />
+          <TodoTable todos={todos} />
+        </div>
         <Footer />
       </div>
     </div>
